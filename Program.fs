@@ -224,4 +224,9 @@ let main argv =
     // Part 2
     printfn "Day 2/Part 2 Valid Passwords:%i" (Day2.Part2.Solution "Day2Part2.txt")
 
+
+    // Day 3
+    // Part 1
+    printfn "Day 3/Part 1 Tree Count:%i" (Day3.Part1.Solution "Day3Part1.txt")
+    
     0 // return an integer exit code
