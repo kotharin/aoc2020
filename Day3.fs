@@ -19,13 +19,11 @@ module Part1 =
 
         static member getLocationDetail (row:RowData) (col:int) =
             let tc = Array.length row.Columns
-            if (col < tc) then
-                row.Columns.[col]
-            else
-                let similarColumn = col % tc
-                row.Columns.[similarColumn]
+            let similarColumn = col % tc
+            row.Columns.[similarColumn]
+                
 
-    let navigateMap (rows:RowData[]) rightMoves downMoves =
+    let navigateMap rightMoves downMoves (rows:RowData[]) =
 
         let rec moveAndCount (rows:RowData[]) currentRow currentCol rightMoves downMoves totalTrees =
             if (currentRow = rows.Length - 1) then
@@ -47,10 +45,7 @@ module Part1 =
         moveAndCount rows 0 0 rightMoves downMoves 0
 
     let Solution file =
-        let rows =
-            File.ReadLines file
-            |> Seq.map RowData.fromString
-            |> Array.ofSeq
-
-        let treeCount = navigateMap rows 3 1
-        treeCount
+        File.ReadLines file
+        |> Seq.map RowData.fromString
+        |> Array.ofSeq
+        |> navigateMap 3 1
