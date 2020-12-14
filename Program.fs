@@ -1,7 +1,7 @@
 // Learn more about F# at http://docs.microsoft.com/dotnet/fsharp
 
 open System
-open Day1
+
 
 [<EntryPoint>]
 let main argv =
@@ -208,11 +208,15 @@ let main argv =
                         549;
                         1570]
 
-    match Part1.Solution input 2020 with
+    match Day1.Part1.Solution input 2020 with
     | Some (n1, n2) -> printfn "Day 1/Part1 - %i" (n1*n2)
     | None -> printfn "Day1/Part1 - No Solution"
 
-    match Part2.Solution input 2020 with
+    match Day1.Part2.Solution input 2020 with
     | Some (n1, n2, n3) -> printfn "Day 1/Part2 - %i" (n1*n2*n3)
     | None -> printfn "Day1/Part2 - No Solution"
+
+    // Day 2
+    // Part 1
+    printfn "Valid Passwords:%i" (Day2.Part1.Solution "Day2Part1.txt")
     0 // return an integer exit code
