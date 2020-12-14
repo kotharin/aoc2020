@@ -212,11 +212,16 @@ let main argv =
     | Some (n1, n2) -> printfn "Day 1/Part1 - %i" (n1*n2)
     | None -> printfn "Day1/Part1 - No Solution"
 
+    // Part 2
     match Day1.Part2.Solution input 2020 with
     | Some (n1, n2, n3) -> printfn "Day 1/Part2 - %i" (n1*n2*n3)
     | None -> printfn "Day1/Part2 - No Solution"
 
     // Day 2
     // Part 1
-    printfn "Valid Passwords:%i" (Day2.Part1.Solution "Day2Part1.txt")
+    printfn "Day 2/Part 1 Valid Passwords:%i" (Day2.Part1.Solution "Day2Part1.txt")
+
+    // Part 2
+    printfn "Day 2/Part 2 Valid Passwords:%i" (Day2.Part2.Solution "Day2Part2.txt")
+
     0 // return an integer exit code
