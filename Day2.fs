@@ -4,7 +4,7 @@ open System.IO
 
 module Part1 =
 
-    type PasswordRule = {
+    type PasswordRule1 = {
         Min:  int
         Max: int
         Character: char
@@ -25,22 +25,19 @@ module Part1 =
                 Password = parts.[2]
             }
 
-        static member isValid (rule:PasswordRule) =
+        static member isValid (rule:PasswordRule1) =
             let charCount =
                 rule.Password.ToCharArray()
                 |> Array.sumBy (fun c -> if (c = rule.Character) then 1 else 0)
             (rule.Min <= charCount) && (charCount <= rule.Max)
 
     let Solution file =
-        let lines =  File.ReadLines file
 
-        let rules = 
-            lines
-            |> Seq.map PasswordRule.fromLine
         let validPaswords =
-            rules 
+            File.ReadLines file
+            |> Seq.map PasswordRule1.fromLine 
             |> Seq.fold (fun state rule -> 
-                    if (PasswordRule.isValid rule) then
+                    if (PasswordRule1.isValid rule) then
                         state + 1
                     else
                         state
