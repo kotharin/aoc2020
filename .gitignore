@@ -1,0 +1,8 @@
+.ionide/
+
+.vscode/
+
+bin/
+
+obj/
+
