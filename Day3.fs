@@ -49,3 +49,19 @@ module Part1 =
         |> Seq.map RowData.fromString
         |> Array.ofSeq
         |> navigateMap 3 1
+
+module Part2 =
+
+    let Solution file =
+        let slopes =
+            File.ReadLines file
+            |> Seq.map Part1.RowData.fromString
+            |> Array.ofSeq
+
+        let moves = [|(1,1);(3,1);(5,1);(7,1);(1,2)|]
+
+        moves
+        |> Array.fold (fun state (right, down) -> 
+                let treeCount = bigint (Part1.navigateMap right down slopes)
+                state * treeCount
+        ) 1I
