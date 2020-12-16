@@ -232,4 +232,9 @@ let main argv =
     // Part 2
     printfn "Day 3/Part 2 Tree Count:%A" (Day3.Part2.Solution "Day3Part1.txt")
 
+
+    // Day 4
+    // Part 1
+    printfn "Day 4/Part 1 %i" (Day4.Part1.Solution "Day4Part1.txt")
+
     0 // return an integer exit code
