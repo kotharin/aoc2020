@@ -77,3 +77,20 @@ module Part1 =
         |> Seq.map getSeatId
         |> Seq.max
         
+
+module Part2 =
+
+    let Solution file =
+        let seats = 
+            File.ReadLines file
+            |> Seq.map Part1.getSeatId
+
+        let min, max = 
+            (seats |> Seq.min), (seats |> Seq.max)
+
+        let seatsSet = Set.ofSeq seats
+
+        [min..max]
+        |> List.filter (fun s -> not (Set.contains s seatsSet))
+        |> List.filter (fun ms -> ( (Set.contains (ms - 1) seatsSet) && (Set.contains (ms + 1) seatsSet) ))// find the missing seat which has +1 and -1 seats
+        |> List.head
