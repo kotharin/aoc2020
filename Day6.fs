@@ -88,7 +88,6 @@ module Part2 =
                             Group.RawData = rawData
                             Group.MemberCount = count
                         }
-                    //printfn "g:%s,c:%i" newGroup.RawData newGroup.MemberCount
                     group tail "" Map.empty 0 (newGroup::accumulatedGroups)
             | [] ->
                 // only keep items in Map
