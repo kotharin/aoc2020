@@ -28,7 +28,7 @@ module Part1 =
     let parseLine (line:string) =
         // Separate on contain
         let bagData = line.Replace("contain", ";").Split([|';'|])
-        let containerBag = bagData.[0].Replace("bags", "bag")
+        let containerBag = bagData.[0].Replace("bags", "bag").Trim()
 
         let insideBags =
             match bagData.[1].Trim() with
@@ -44,6 +44,64 @@ module Part1 =
         // return the container bag and the inside bags
         containerBag, insideBags
 
+    (*
+        Traverse the map till you hit a node with no parent
+
+    *)
+    let traverseBagMap bagToFind (bagMap:Map<string, string list>) =
+
+        let rec traverseRec currentNode (bm:Map<string, string list>) traversed count =
+            // check if the current node has any node that point to it
+            match Map.tryFind currentNode bm with
+            | None | Some ([]) ->
+                count,traversed
+            | Some (nodes) ->
+                nodes
+                |> List.fold (fun (stepCount, tn) node ->
+                    // if not traversed, traverse it else skip
+                    if (Map.containsKey node traversed) then
+                        count,traversed
+                    else
+                        let updatedTraversed = (Map.add node 1 tn)
+                        traverseRec node bm updatedTraversed (stepCount + 1)
+                ) (count, traversed)
+                // for each of them traverse the nodes till the roots
+                // traverseRec head bm (count + 1)
+            
+        let traversedAlready = Map.empty
+        traverseRec bagToFind bagMap traversedAlready 0 
+
+
+    let traverseContainerBagMap bagToFind (cbMap:Map<string, Map<string, int>>) =
+
+        let rec traverse (bagsToFind:List<string>) bagMap accumulatedContainers =
+            match bagsToFind with
+            | head::tail ->
+                // find all containers that can contain this bag
+                let newBagsToFind =
+                    bagMap
+                    |> Map.fold (fun state cb ib ->
+                        if (Map.containsKey head ib) then
+                            // add this to the list of bags to find
+                            cb::state                            
+                        else
+                            state
+                    ) tail
+                // add these to the accumulated containers
+                // IF it doesn't already exist
+                let newAccumulatedContainers =
+                    newBagsToFind
+                    |> List.fold (fun state c ->
+                        if (not (Map.containsKey c state)) then
+                            Map.add c 1 state
+                        else
+                            state
+                    ) accumulatedContainers
+                traverse newBagsToFind bagMap newAccumulatedContainers
+            | [] ->
+                accumulatedContainers
+
+        traverse [bagToFind] cbMap Map.empty
 
     let Solution file =
         let bagData =
@@ -51,7 +109,22 @@ module Part1 =
             |> Array.ofSeq
             |> Array.map parseLine
         
-         // create a reverse map
+        // create a map container bag -> list of inside bags
+        let containerBagMap =
+            bagData
+            |> Array.fold( fun state (cb,ibs) -> 
+                // map of all containers with their numbers
+                let cm =
+                    ibs
+                    |> Array.fold (fun state ib ->
+                        Map. add ib.Name ib.Quantity state
+                    ) Map.empty
+                Map.add cb cm state
+            ) Map.empty
+
+        
+        // create a reverse map
+        (*
         let bagMap =
             bagData|> Array.fold (fun state (cb, ibs) ->
                 // for each inside bag, add it as key that
@@ -70,4 +143,6 @@ module Part1 =
             ) Map.empty
 
         printfn "%A" bagMap
-        bagMap.Count
+        traverseBagMap "shiny gold bag" bagMap
+        *)
+        traverseContainerBagMap "shiny gold bag" containerBagMap |> Map.count
