@@ -46,7 +46,6 @@ module Part1 =
 
     (*
         Traverse the map till you hit a node with no parent
-
     *)
     let traverseBagMap bagToFind (bagMap:Map<string, string list>) =
 
@@ -146,3 +145,48 @@ module Part1 =
         traverseBagMap "shiny gold bag" bagMap
         *)
         traverseContainerBagMap "shiny gold bag" containerBagMap |> Map.count
+
+module Part2 =
+
+    (*
+        Brute force solution. Worst runtime.
+    *)
+    let countInsideBags bagToCount (bagMap:Map<string, Map<string, int>>) =
+        
+        let rec countBags bag (bags:Map<string, Map<string, int>>) =
+
+            // find the inside bags for this container bag
+            let ibc = Map.find bag bags
+            if (Map.count ibc = 0) then
+                0
+            else
+                // get the count for all these bags
+                let innerCount =
+                    ibc|> Map.fold (fun state b c ->
+                        let cnt = countBags b bags
+                        state + (c * (cnt) + c)
+                    ) 0
+                innerCount
+
+        countBags bagToCount bagMap
+
+    let Solution file =
+        let bagData =
+            File.ReadLines file
+            |> Array.ofSeq
+            |> Array.map Part1.parseLine
+
+        // create a map container bag -> list of inside bags
+        let containerBagMap =
+            bagData
+            |> Array.fold( fun state (cb,ibs) -> 
+                // map of all containers with their numbers
+                let cm =
+                    ibs
+                    |> Array.fold (fun map ib ->
+                        Map. add ib.Name ib.Quantity map
+                    ) Map.empty
+                Map.add cb cm state
+            ) Map.empty
+
+        countInsideBags "shiny gold bag" containerBagMap
