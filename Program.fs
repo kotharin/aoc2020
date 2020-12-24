@@ -268,4 +268,8 @@ let main argv =
     // Part 2
     printfn "Day8/Part 2 %i " (Day8.Part2.Solution "Day8Part1.txt")
 
+    // Day 9
+    // Part 1
+    printfn "Day9/Part 1 %i " ((Day9.Part1.Solution "Day9Part1.txt") |> List.head)
+
     0 // return an integer exit code
