@@ -6,7 +6,7 @@ module Part1 =
 
 
     
-    let findEncodingViolation (numbers:int array) batchSize =
+    let findEncodingViolation (numbers:int64 array) batchSize =
         let mapNumbers =
             [|0..batchSize-1|]
             |> Array.fold (fun state i -> 
@@ -14,28 +14,32 @@ module Part1 =
                 Map.add numbers.[i] 1 state
             ) Map.empty
 
-        let rec findViolation (numbers: int array) currentIndex mapNumbers =
+        let rec findComplement (numbers: int64 array) mapNums num currentIndex endIndex complement =
+            if (currentIndex <= endIndex) then
+                // check if the complement exists
+                let testNum = numbers.[currentIndex]
+                let comp = num - testNum
+                if ((comp <> testNum) && (Map.containsKey comp mapNums)) then
+                    Some comp
+                else
+                    findComplement numbers mapNums num (currentIndex+1) endIndex None
+            else
+                complement
+        
+        let rec findViolation2 (numbers: int64 array) currentIndex mapNumbers =
             // get the number to check
             let number = numbers.[currentIndex]
 
-            let complements =
-                mapNumbers
-                |> Map.fold (fun state num _ ->
-                    // check if there is a pair
-                    // of numbers that adds to the 
-                    // given number
-                    let complement = number - num
-                    // check if complement exists
-                    if ((List.isEmpty state) && (Map.containsKey complement mapNumbers)) then
-                        number::state
-                    else
-                        state
-                ) List.empty
+            
+            let complement =
+                findComplement numbers mapNumbers number (currentIndex - batchSize) (currentIndex - 1) None
 
-            match complements with
-            | [] ->
+            match complement with
+            | None ->
+                // No complement found
                 [number]
-            | head::tail ->
+            | Some _ ->
+                // found the complement
                 // chekck the next batch
                 // remove the number at the begining of the batch
                 // add new number to bottom of the batch
@@ -43,14 +47,15 @@ module Part1 =
                 let newMap =
                     Map.remove removeNumber mapNumbers
                     |> Map.add number 1
-                findViolation numbers (currentIndex + 1) newMap
+                findViolation2 numbers (currentIndex + 1) newMap
 
-        findViolation numbers batchSize mapNumbers
+        findViolation2 numbers batchSize mapNumbers
+
 
     let Solution file =
         let numbers =
             File.ReadLines file
-            |> Seq.map int
+            |> Seq.map int64
             |> Seq.toArray
 
-        findEncodingViolation numbers 5
+        findEncodingViolation numbers 25
