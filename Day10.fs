@@ -4,65 +4,72 @@ open System.IO
 
 module Part1 =
 
-    type DiffBucket = Diff1 | Diff2 | Diff3
-
-    let findNextAdapter adapters currentAdapter =
-        // check if there is an adapter with +1 rating.
-        // if not check for +2 and +3
-        match Map.tryFindKey (fun k _ -> k = (currentAdapter + 1)) adapters with
-        | Some v ->
-            Some (v, Diff1)
-        | None ->
-            match Map.tryFindKey (fun k _ -> k = (currentAdapter + 2)) adapters with
-            | Some v ->
-                Some (v, Diff2)
-            | None ->
-                match Map.tryFindKey (fun k _ -> k = (currentAdapter + 3)) adapters with
-                | Some v ->
-                    Some (v, Diff3)
-                | _ -> None
-
-    let getAdapterChain adapters =
-
-        // add all adapters to a map
-        let mapAdapters =
-            adapters
-            |> List.map (fun a -> a,1)
-            |> Map.ofList
-
-        // Seed the diff counts
-        // The 3 diff is seeded with 1
-        // because the last adapter, 
-        // which is not on the list has
-        // a diff of 3 with the last one
-        // that IS on the the list.
-        let mapDiffs =
-            [(Diff1,0);(Diff2,0);(Diff3,1)]
-            |> Map.ofList
-
-        let rec getChain map currentAdapter chain diffCount=
-            match findNextAdapter map currentAdapter with
-            | None ->
-                chain,diffCount
-            | Some (nextAdapter, diff) ->
-                // Add to the chain
-                let newChain = List.append chain [nextAdapter]
-                // Add to diff bucket
-                let dc = Map.find diff diffCount
-                let newDiffCount = Map.add diff (dc + 1) diffCount
-                // find the next adapter
-                getChain map nextAdapter newChain newDiffCount
-
-        getChain mapAdapters 0 [0] mapDiffs 
-
-
     let Solution file =
-        let adapters =
-            File.ReadLines file
+        let adps =
+            0::
+            (File.ReadLines file
             |> Seq.map int
-            |> Seq.toList
+            |> Seq.toList)
             |> List.sort
+        
+        let adapters = List.append adps [(List.last adps + 3)]
 
-        let _,diffs = getAdapterChain adapters
+        let diffs =
+            List.pairwise adapters
+            |> List.map (fun (a,b) -> b - a)
+            |> List.countBy id
+            |> Map.ofList
 
-        (Map.find Diff1 diffs) * (Map.find Diff3 diffs)
+        
+        (Map.find 3 diffs) * (Map.find 1 diffs)
+
+module Part2 =
+        
+    let Solution file =
+        let adps =
+            0::
+            (File.ReadLines file
+            |> Seq.map int
+            |> Seq.toList)
+            |> List.sort
+        
+        let adapters = List.append adps [(List.last adps + 3)]
+
+        let mapCount =
+            adapters
+            |> List.fold (fun state a -> 
+                Map.add a 0L state
+            ) Map.empty
+            |> Map.add 0 1L
+
+
+        (*
+for adapter in sorted(adapters):
+    for diff in range(1, 4):
+        next_adapter = adapter + diff
+        if next_adapter in adapters:
+            paths[next_adapter] += paths[adapter]
+print(paths[max_voltage])        
+        *)
+
+        let count adapter mapCount =
+            [1..3]
+            |> List.fold (fun state i -> 
+                match (Map.tryFind (adapter + i) state) with
+                | None ->
+                    state
+                | Some c ->
+                    // get the count of the current adapter
+                    let cac = Map.find adapter state
+                    Map.add (adapter + i) (c+cac) state
+               
+            ) mapCount
+
+        let count = 
+            adapters
+            |> List.fold (fun state a ->
+                count a state
+            ) mapCount
+
+        Map.find (List.last adapters) count
+
