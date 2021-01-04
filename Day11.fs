@@ -153,7 +153,7 @@ module Part2 =
             | TopRight ->
                 let newRow, newCol = getNextLocation currentRow currentCol direction
                 // add to the list if its within the limits
-                if ((newRow < maxRows) && (newCol < maxCols) && ((newRow > 0)) && (newCol > 0)) then
+                if ((newRow < maxRows) && (newCol < maxCols) && ((newRow >= 0)) && (newCol >= 0)) then
                     getSeatLocations newRow newCol (seatList@[(newRow, newCol)]) direction
                 else    
                     seatList
@@ -247,8 +247,8 @@ module Part2 =
             seatMap
         else
             let newMap = nextStateForAllSeats maxRows maxCols seatMap
-            printfn "-----------"
-            print newMap
+            //printfn "-----------"
+            //print newMap
             getSteadyStateSeatMap maxRows maxCols newMap seatMap
 
     let Solution file =
