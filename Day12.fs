@@ -150,9 +150,6 @@ module Part2 =
         | Part1.Instruction.Forward i ->
             {current with BoatLocation = {X = boatX + (wpX * i); Y = boatY + (wpY * i)}}
 
-        | _ ->
-            printfn "should never get here" 
-            current
 
     let Solution file =
         let instructions =
