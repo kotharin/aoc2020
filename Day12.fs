@@ -46,9 +46,7 @@ module Part1 =
                 -> 0
         let turnIncrement = (td % 360) / 90
 
-        let newDirection = (currentDirection + turnIncrement) % 4
-
-        newDirection
+        (currentDirection + turnIncrement) % 4
 
     let move (currentLocation:Location) (instruction:Instruction) =
         let x = currentLocation.X
@@ -82,18 +80,7 @@ module Part1 =
             currentLocation
         
 
-    let traverseInstructions instructions =
-        ()
-
     let Solution file =
-        let directionMap =
-            [
-                (1,"N");
-                (2,"E");
-                (3,"S");
-                (4,"W")
-            ]|> Map.ofList
-
 
         let instructions =
             File.ReadLines file
@@ -105,4 +92,81 @@ module Part1 =
         ) {Location.Direction = Direction.East
            X = 0
            Y = 0}
+        
+module Part2 =
+
+    type Location = {
+        X: int
+        Y: int
+    }
+
+    type BoatTracker = {
+        BoatLocation: Location
+        WaypointLocation: Location
+    }
+
+    let rotateWaypoint (currentWaypoint:Location) (instruction:Part1.Instruction) =
+        match instruction with
+        | Part1.Instruction.Right i when (i%360) = 0 ->
+            currentWaypoint
+        | Part1.Instruction.Right i when (i%270) = 0 ->
+            {X= (-1)*currentWaypoint.Y; Y = currentWaypoint.X }
+        | Part1.Instruction.Right i when (i%180) = 0 ->
+            {X= (-1)*currentWaypoint.X; Y = (-1)*currentWaypoint.Y }
+        | Part1.Instruction.Right i when (i%90) = 0 ->
+            {X= currentWaypoint.Y; Y = (-1)*currentWaypoint.X }
+        | Part1.Instruction.Left i when (i%360) = 0 ->
+            currentWaypoint
+        | Part1.Instruction.Left i when (i%270) = 0 ->
+            {X= currentWaypoint.Y; Y = (-1)*currentWaypoint.X }
+        | Part1.Instruction.Left i when (i%180) = 0 ->
+            {X= (-1)*currentWaypoint.X; Y = (-1)*currentWaypoint.Y }
+        | Part1.Instruction.Left i when (i%90) = 0 ->
+            {X= (-1)*currentWaypoint.Y; Y = currentWaypoint.X }
+        | _ ->
+            printfn "should never reach here"
+            currentWaypoint
+
+    let move (current:BoatTracker) (instruction:Part1.Instruction) =
+        let boatX = current.BoatLocation.X
+        let boatY = current.BoatLocation.Y
+        let wpX = current.WaypointLocation.X
+        let wpY = current.WaypointLocation.Y
+
+        match instruction with
+        | Part1.Instruction.North i  ->
+            {current with WaypointLocation = {X = wpX; Y = wpY + i}}
+        | Part1.Instruction.East i ->
+            {current with WaypointLocation = {X = wpX + i; Y = wpY}}
+        | Part1.Instruction.South i ->
+            {current with WaypointLocation = {X = wpX; Y = wpY - i}}
+        | Part1.Instruction.West i ->
+            {current with WaypointLocation = {X = wpX - i; Y = wpY}}
+        | Part1.Instruction.Left i | Part1.Instruction.Right i ->
+            let nextWP = (rotateWaypoint current.WaypointLocation instruction )
+            {
+                current with WaypointLocation = nextWP
+            }
+        | Part1.Instruction.Forward i ->
+            {current with BoatLocation = {X = boatX + (wpX * i); Y = boatY + (wpY * i)}}
+
+        | _ ->
+            printfn "should never get here" 
+            current
+
+    let Solution file =
+        let instructions =
+            File.ReadLines file
+            |> Seq.map Part1.Instruction.parse
+            |> Seq.toList
+
+        let start = {
+            BoatTracker.BoatLocation = {X = 0; Y=0}
+            BoatTracker.WaypointLocation = {X=10; Y=1}
+        }
+
+        instructions
+        |> List.fold (move
+        ) start
+
         
