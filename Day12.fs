@@ -5,7 +5,7 @@ open System.IO
 module Part1 =
 
 
-    type Direction = North = 1 | East = 2 | South = 3 | West = 4
+    type Direction = North = 0 | East = 1 | South = 2 | West = 3
 
     type Instruction =
         | North of int
@@ -42,7 +42,8 @@ module Part1 =
                 360 - i
             | Right i ->
                 i
-            | _ -> 0
+            | _ 
+                -> 0
         let turnIncrement = (td % 360) / 90
 
         let newDirection = (currentDirection + turnIncrement) % 4
@@ -76,7 +77,9 @@ module Part1 =
             {currentLocation with Y = y - i}
         | Forward i when direction = Direction.West ->
             {currentLocation with X = x - i}
-        | _ -> currentLocation
+        | _ ->
+            printfn "should never get here" 
+            currentLocation
         
 
     let traverseInstructions instructions =
