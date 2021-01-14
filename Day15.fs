@@ -39,3 +39,25 @@ module Part1 =
             ) Map.empty
             
         getTurnValue 2020 numbersMap lastNumber
+
+module Part2 =
+    open Part1
+
+    let Solution file =
+        let numbers =
+            File.ReadLines file
+            |> Seq.toArray
+            |> Array.head
+            
+        let startingNumbers =
+            numbers.Split [|','|]
+
+        let lastNumber = (int)startingNumbers.[Array.length startingNumbers - 1]
+        
+        let numbersMap = 
+            [|0..(Array.length startingNumbers - 2)|]
+            |> Array.fold (fun map i ->
+                Map.add ((int)startingNumbers.[i]) (i+1) map
+            ) Map.empty
+            
+        getTurnValue 30000000 numbersMap lastNumber
