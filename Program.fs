@@ -310,4 +310,8 @@ let main argv =
     // Part 2
     printfn "Day14/Part 2 %A " (Day14.Part2.Solution "Day14Part1.txt")
 
+    // Day 15
+    // Part 1
+    printfn "Day15/Part 1 %A " (Day15.Part1.Solution "Day15Part1.txt")
+
     0 // return an integer exit code
